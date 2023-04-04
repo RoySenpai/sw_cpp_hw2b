@@ -22,9 +22,7 @@ using namespace std;
 #include "card.hpp"
 
 namespace ariel {
-    Card::Card(Value value = Ace, Suit suit = Clubs): value(value), suit(suit) {};
-
-    Card::Card(const Card &other): value(other.value), suit(other.suit) {};
+    Card::Card(Value value, Suit suit): value(value), suit(suit) {};
 
     string Card::toString() const {
         string svalue, ssuit;
@@ -66,6 +64,6 @@ namespace ariel {
                 break;
         }
 
-        return (svalue + "of " + ssuit);
+        return (svalue + " of " + ssuit);
     }
 }

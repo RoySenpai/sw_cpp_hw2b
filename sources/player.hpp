@@ -33,10 +33,10 @@ namespace ariel
             string name;
 
             /* The player's hand. */
-            vector<Card>* hand;
+            vector<Card> hand;
 
             /* The player's taken cards. */
-            vector<Card>* taken;
+            vector<Card> taken;
 
             /*
              * The player's inGame status.
@@ -59,23 +59,6 @@ namespace ariel
             */
             Player(string name = "Default Player");
 
-            /*
-             * Copy constructor.
-             * Initializes the name and inGame to the values of the other player.
-             * @param other The player to copy.
-             * @note The default copy constructor is not allowed.
-             * @note The player's hand and taken cards are copied.
-            */
-            Player(const Player& other);
-
-            /*
-             * Destructor.
-             * Deletes the player's hand and taken cards.
-             * @note The default destructor is not allowed.
-             * @note The player's name and inGame status are not deleted.
-            */
-            ~Player();
-
             /* Getters&Setters zone */
 
             /*
@@ -85,7 +68,7 @@ namespace ariel
              * @note The function is inline.
             */
             size_t stacksize() const { 
-                return this->hand->size(); 
+                return this->hand.size(); 
             }
 
             /*
@@ -95,48 +78,49 @@ namespace ariel
              * @note The function is inline.
             */
             size_t cardesTaken() const { 
-                return this->taken->size(); 
+                return this->taken.size(); 
             }
 
             /*
-             * Returns the card in the player's hand at the given index.
-             * @param index The index of the card in the player's hand.
-             * @return The card in the player's hand at the given index.
+             * Returns the last card in the player's hand.
+             * @return The last card in the player's hand.
              * @note The function is const and can be called on a const object.
              * @note The function is inline.
             */
-            Card getCard(int index) const { 
-                return this->hand->at(index); 
+            const Card& getCard() const { 
+                return this->hand.back();
             }
 
             /*
-             * Returns the card in the player's taken cards at the given index.
-             * @param index The index of the card in the player's taken cards.
-             * @return The card in the player's taken cards at the given index.
+             * Returns the last card in the player's taken cards.
+             * @return Last card in the player's taken cards.
              * @note The function is const and can be called on a const object.
              * @note The function is inline.
             */
-            Card getTaken(int index) const { 
-                return this->taken->at(index); 
+            const Card& getTaken() const { 
+                return this->taken.back();
+            }
+
+
+            /* 
+             * Returns the player's name.
+             * @return The player's name.
+             * @note The function is const and can be called on a const object.
+             * @note The function is inline.
+            */
+            string getName() const { 
+                return this->name; 
             }
 
             /*
-             * Returns the player's index of the given card in his hand.
-             * @param card The card to search for.
-             * @return The player's index of the given card in his hand.
-             * @throw out_of_range If the card is not in the player's hand.
+             * Returns the player's inGame status.
+             * @return The player's inGame status.
              * @note The function is const and can be called on a const object.
+             * @note The function is inline.
             */
-            int getCardIndex(Card card) const;
-
-            /*
-             * Returns the player's index of the given card in his taken cards.
-             * @param card The card to search for.
-             * @return The player's index of the given card in his taken cards.
-             * @throw out_of_range If the card is not in the player's taken cards.
-             * @note The function is const and can be called on a const object.
-            */
-            int getTakenIndex(Card card) const;
+            bool isInGame() const { 
+                return this->inGame; 
+            }
 
             /*
              * Sets the player's inGame status to the given status.
@@ -157,7 +141,7 @@ namespace ariel
              * @throw logic_error If the player is already in a game or 
              *                      if the player has 26 cards.
             */
-            void addCard(Card card);
+            void addCard(Card& card);
 
             /*
              * Adds a card to the player's taken cards.
@@ -165,42 +149,23 @@ namespace ariel
              * @throw invalid_argument If the card is already in the player's taken cards.
              * @throw logic_error If the player is already in a game.
             */
-            void addTaken(Card card);
+            void addTaken(Card& card);
 
             /*
-             * Removes the card in the player's hand at the given index.
-             * @param index The index of the card to remove.
+             * Removes the last card in the player's hand cards.
              * @note The function is inline.
             */
-            void removeCard(int index) { 
-                this->hand->erase(this->hand->begin() + index); 
-            }
-
-            /* 
-             * Removes the given card from the player's hand.
-             * @param card The card to remove.
-             * @throw invalid_argument If the card is not in the player's hand.
-             * @throw logic_error If the player is not in a game.
-            */
-            void removeCard(Card card);
-
-            /*
-             * Removes the card in the player's taken cards at the given index.
-             * @param index The index of the card to remove.
-             * @note The function is inline.
-            */
-            void removeTaken(int index) { 
-                this->taken->erase(this->taken->begin() + index);
+            void removeCard() { 
+                this->hand.pop_back();
             }
 
             /*
-             * Removes the given card from the player's taken cards.
-             * @param card The card to remove.
-             * @throw invalid_argument If the card is not in the player's taken cards.
-             * @throw logic_error If the player is not in a game.
+             * Removes the last card in the player's taken cards.
+             * @note The function is inline.
             */
-            void removeTaken(Card card);
-
+            void removeTaken() { 
+                this->taken.pop_back();
+            }
 
 
             /* Operators overriding zone */
@@ -215,7 +180,6 @@ namespace ariel
             bool operator==(const Player &rhs) const {
                 return this->name == rhs.name;
             }
-
 
             /* Other methods zone */
 
@@ -234,33 +198,6 @@ namespace ariel
              * @note The function is const and can be called on a const object.
             */
             bool hasTaken(Card card) const;
-
-            /*
-             * Returns the player's inGame status.
-             * @return The player's inGame status.
-             * @note The function is const and can be called on a const object.
-             * @note The function is inline.
-            */
-            bool isInGame() const { 
-                return this->inGame; 
-            }
-
-            /* 
-             * Returns the player's name.
-             * @return The player's name.
-             * @note The function is const and can be called on a const object.
-             * @note The function is inline.
-            */
-            string getName() const { 
-                return this->name; 
-            }
-
-            /*
-             * Returns a string representation of the player's hand.
-             * @return A string representation of the player's hand.
-             * @note The function is const and can be called on a const object.
-            */
-            string getHand() const;
 
             /*
              * Returns a string representation of the player.

@@ -36,7 +36,7 @@ namespace ariel
             Player *winner;    
 
             /* The cards in the game. */
-            vector<Card> *cards;
+            vector<Card> cards;
 
             /* The last turn stats. */
             string lastTurnStats;
@@ -53,7 +53,7 @@ namespace ariel
             unsigned int turn;
 
             /* The number of draws in the game. */
-            unsigned int draws;     
+            unsigned int draws;
 
         public:
             /* Constuctors&Destructors zone */
@@ -67,17 +67,8 @@ namespace ariel
             */
             Game(Player& plr1, Player& plr2);
 
-            /* 
-             * A destructor for the Game class.
-             * Deletes the cards vector.
-             * @note The players are not deleted because they are not created in the Game class.
-             */
-            ~Game() {
-                delete cards;
-            }
 
             /* Other methods zone */
-
 
             /*
              * Plays a single turn.
@@ -110,9 +101,7 @@ namespace ariel
              * Prints the name of the winning player.
              * @note The name is printed to the standard output.
             */
-            void printWiner() const {
-                cout << winner->getName() << endl;
-            }
+            void printWiner() const;
 
             /*
              * Prints the log of all the turns played.

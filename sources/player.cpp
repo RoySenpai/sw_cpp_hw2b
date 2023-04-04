@@ -18,25 +18,12 @@
 #include "player.hpp"
 
 namespace ariel {
-    Player::Player(string name = "Default Player"): name(name), inGame(false), hand(new vector<Card>()), taken(new vector<Card>()) {};
-
-    Player::Player(const Player& other): name(other.name), inGame(other.inGame), hand(new vector<Card>()), taken(new vector<Card>()) {
-        for (int i = 0; i < other.stacksize(); ++i)
-            this->hand->push_back(other.getCard(i));
-
-        for (int i = 0; i < other.cardesTaken(); ++i)
-            this->taken->push_back(other.getTaken(i));
-    }
-
-    Player::~Player() {
-        delete this->hand;
-        delete this->taken;
-    }
+    Player::Player(string name): name(name), inGame(false) {};
 
     bool Player::hasCard(Card card) const {
-        for (int i = 0; i < this->stacksize(); ++i)
+        for (size_t i = 0; i < this->stacksize(); ++i)
         {
-            Card t = this->getCard(i);
+            Card t = this->hand.at(i);
 
             if (t.getSuit() == card.getSuit() && t.getValue() == card.getValue())
                 return true;
@@ -46,9 +33,9 @@ namespace ariel {
     }
 
     bool Player::hasTaken(Card card) const {
-        for (int i = 0; i < this->cardesTaken(); ++i)
+        for (size_t i = 0; i < this->cardesTaken(); ++i)
         {
-            Card t = this->getTaken(i);
+            Card t = this->taken.at(i);
 
             if (t.getSuit() == card.getSuit() && t.getValue() == card.getValue())
                 return true;
@@ -57,79 +44,23 @@ namespace ariel {
         return false;
     }
 
-    int Player::getCardIndex(Card card) const {
-        for (int i = 0; i < this->stacksize(); ++i)
-        {
-            Card t = this->getCard(i);
-
-            if (t.getSuit() == card.getSuit() && t.getValue() == card.getValue())
-                return i;
-        }
-
-        throw out_of_range("Player doesn't have this card!");
-    }
-
-    int Player::getTakenIndex(Card card) const {
-        for (int i = 0; i < this->cardesTaken(); ++i)
-        {
-            Card t = this->getTaken(i);
-
-            if (t.getSuit() == card.getSuit() && t.getValue() == card.getValue())
-                return i;
-        }
-
-        throw out_of_range("Player hasn't taken this card!");
-    }
-
-    void Player::addCard(Card card) { 
+    void Player::addCard(Card& card) { 
         if (this->inGame)
             throw logic_error("Player is already in a game!");
-        
-        if (this->stacksize() >= 26)
-            throw logic_error("Player's hand is full! (26 cards)");
 
         if (this->hasCard(card))
             throw invalid_argument("Player already has this card!");
 
-        this->hand->push_back(card); 
+        this->hand.push_back(card); 
     }
 
-    void Player::addTaken(Card card) {
+    void Player::addTaken(Card& card) {
         if (!this->inGame)
             throw logic_error("Player isn't in a game!");
 
         if (this->hasTaken(card))
             throw invalid_argument("Player already has this card!");
 
-        this->taken->push_back(card);
-    }
-
-    void Player::removeCard(Card card) {
-        if (!this->inGame)
-            throw logic_error("Player isn't in a game!");
-
-        if (!this->hasCard(card))
-            throw invalid_argument("Player doesn't have this card!");
-
-        this->hand->erase(this->hand->begin() + this->getCardIndex(card));
-    }
-
-    void Player::removeTaken(Card card) {
-        if (!this->inGame)
-            throw logic_error("Player isn't in a game!");
-
-        if (!this->hasTaken(card))
-            throw invalid_argument("Player hasn't taken this card!");
-
-        this->taken->erase(this->taken->begin() + this->getTakenIndex(card));
-    }
-
-    string Player::getHand() const {
-        string str = "";
-
-        for (int i = 0; i < this->stacksize(); i++)
-            str += (this->getCard(i)).toString() + " ";
-
-        return str;
+        this->taken.push_back(card);
     }
 }

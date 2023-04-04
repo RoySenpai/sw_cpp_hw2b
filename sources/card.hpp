@@ -77,19 +77,6 @@ namespace ariel
             */
             Card(Value value = Ace, Suit suit = Clubs);
 
-            /* 
-             * Copy constructor.
-             * Copy the value and the suit of the other card.
-             * @param other The other card to copy.
-            */
-            Card(const Card &other);
-
-            /*
-             * Destructor.
-             * @note No need to implement (default is fine), just to make clang-tidy happy.
-            */
-            ~Card() = default;
-
             /* Getters zone */
 
             /* 
@@ -127,16 +114,6 @@ namespace ariel
             */
             bool operator<(const Card &rhs) const {
                 return (value == Ace and rhs.value == Two) or (value > Two and rhs.value < Three) or (value < rhs.value);
-            }
-
-            /*
-             * Copy assignment operator.
-             * @param other The other card to copy.
-             * @return A reference to this card.
-             * @note No need to implement (default is fine), just to make clang-tidy happy.
-            */
-            Card& operator=(const Card& other) {
-                return *this;
             }
 
             /* Other methods zone */
