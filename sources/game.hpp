@@ -26,31 +26,118 @@ namespace ariel
     class Game
     {
         private:
+            /* Reference to the first player. */
             Player& p1;
+
+            /* Reference to the second player. */
             Player& p2;
-            vector<Card> cards;
-            int turn;
+
+            /* The winner of the game. */
+            Player *winner;    
+
+            /* The cards in the game. */
+            vector<Card> *cards;
+
+            /* The last turn stats. */
+            string lastTurnStats;
+
+            /* The log of all the turns played. */
+            string log;   
+
+            /*
+             * The current turn stats.
+             * 0 means no turn has been played yet.
+             * 1 means the first turn has been played. 2 means the second turn has been played and so on.
+             * @note Max number of turns is 26.
+            */
+            unsigned int turn;
+
+            /* The number of draws in the game. */
+            unsigned int draws;     
 
         public:
-            // Constuctor: Create a game with two players
+            /* Constuctors&Destructors zone */
+            
+            /* 
+             * A constructor for the Game class.
+             * @param plr1 - The first player.
+             * @param plr2 - The second player.
+             * @throws invalid_argument if Player 1 and Player 2 are the same player
+             *       or if Player 1 or Player 2 are already in a game.
+            */
             Game(Player& plr1, Player& plr2);
 
-            // play a single turn
+            /* 
+             * A destructor for the Game class.
+             * Deletes the cards vector.
+             * @note The players are not deleted because they are not created in the Game class.
+             */
+            ~Game() {
+                delete cards;
+            }
+
+            /* Other methods zone */
+
+
+            /*
+             * Plays a single turn.
+             * @throws logic_error if the game is over.
+            */
             void playTurn();
 
-            // print the last turn stats.
-            void printLastTurn();
+            /* 
+             * Prints the last turn stats.
+             * @throws logic_error if the game is over.
+             * @note The stats are printed to the standard output.
+             * @note The stats are printed in the following format:
+             * @note <turn number>
+             * @note <player 1 name> <player 1 card> <player 1 cards won>
+             * @note <player 2 name> <player 2 card> <player 2 cards won>
+             * @note <winner name> <winner cards won>
+             * @note <draws in this turn>
+            */
+            void printLastTurn() const {
+                cout << lastTurnStats << endl;
+            }
 
-            //playes the game untill the end
+            /*
+             * Plays the game until the end.
+             * @throws logic_error if the game is over.
+            */
             void playAll();
 
-            // prints the name of the winning player
-            void printWiner();
+            /*
+             * Prints the name of the winning player.
+             * @note The name is printed to the standard output.
+            */
+            void printWiner() const {
+                cout << winner->getName() << endl;
+            }
 
-            // prints all the turns played one line per turn (same format as game.printLastTurn())
-            void printLog();
+            /*
+             * Prints the log of all the turns played.
+             * @note The log is printed to the standard output.
+             * @note The log is printed in the same format as game.printLastTurn().
+            */
+            void printLog() const {
+                cout << log << endl;
+            }
 
-            // for each player prints basic statistics: win rate, cards won, <other stats you want to print>. Also print the draw rate and amount of draws that happand. (draw within a draw counts as 2 draws. )
+            /*
+             * Prints the statistics of the game.
+             * @note The statistics are printed to the standard output.
+             * @note The statistics are printed in the following format:
+             * @note Player <player 1 name> status:
+             * @note Cards won: <player 1 cards won> <player 1 draws>
+             * @note Cards left: <player 1 cards left>
+             * @note Win rate: <player 1 win rate>%
+             * @note Player <player 2 name> status:
+             * @note Cards won: <player 2 cards won> <player 2 draws>
+             * @note Cards left: <player 2 cards left>
+             * @note Win rate: <player 2 win rate>%
+             * @note Draws: <draws>
+             * @note Draw rate: <draw rate>%
+            */
             void printStats();
     };
 }

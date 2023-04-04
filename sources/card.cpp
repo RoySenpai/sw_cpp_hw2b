@@ -22,49 +22,50 @@ using namespace std;
 #include "card.hpp"
 
 namespace ariel {
-    ostream &operator<<(ostream &stream, Card const &v) {
-        string svalue, ssuit;
+    Card::Card(Value value = Ace, Suit suit = Clubs): value(value), suit(suit) {};
 
-        switch (v.getValue())
+    Card::Card(const Card &other): value(other.value), suit(other.suit) {};
+
+    string Card::toString() const {
+        string svalue, ssuit;
+        Suit suit = this->getSuit();
+        Value value = this->getValue();
+
+        switch (value)
         {
-            case 0:
+            case Ace:
                 svalue = "Ace";
                 break;
-            case 10:
+            case Jack:
                 svalue = "Jack";
                 break;
-            case 11:
+            case Queen:
                 svalue = "Queen";
                 break;
-            case 12:
+            case King:
                 svalue = "King";
                 break;
             default:
-                svalue = to_string(v.getValue());
+                svalue = to_string((int)value);
                 break;
         }
 
-        switch (v.getSuit())
+        switch (suit)
         {
-            case 'C':
+            case Clubs:
                 ssuit = "Clubs";
                 break;
-            case 'D':
+            case Diamonds:
                 ssuit = "Diamonds";
                 break;
-            case 'H':
+            case Hearts:
                 ssuit = "Hearts";
                 break;
-            case 'S':
+            case Spades:
                 ssuit = "Spades";
-                break;
-            default:
-                ssuit = "Unknown";
                 break;
         }
 
-        stream << svalue << "of " << ssuit;
-
-        return stream;
+        return (svalue + "of " + ssuit);
     }
 }

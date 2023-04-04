@@ -20,6 +20,38 @@
 #include <iostream>
 #include <string>
 
+/* Enumerations */
+
+/*  The value of the card (A, 2-10, J, Q or K). */
+enum class Value
+{
+    Ace = 1,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+    Jack,
+    Queen,
+    King
+};
+
+/* The suit of the card (Clubs, Diamonds, Hearts or Spades). */
+enum class Suit
+{
+    Clubs = 1,
+    Diamonds,
+    Hearts,
+    Spades
+};
+
+using enum Value;
+using enum Suit;
+
 using namespace std;
 
 namespace ariel
@@ -27,27 +59,93 @@ namespace ariel
     class Card
     {
         private:
-            int value;
-            char suit;
+            /* The value of the card (A, 2-10, J, Q or K). */
+            Value value;
+
+            /* The suit of the card (Clubs, Diamonds, Hearts or Spades). */
+            Suit suit;
 
         public:
-            // Constructor: Create a card with a value and a suit
-            Card(int value, char suit)
-            {
-                this->value = value;
-                this->suit = suit;
-            };
+            /* Constructors&Destructors zone */
 
-            // Get the value of the card
-            int getValue() const { return value; }
+            /*
+             * Constructor with two arguments.
+             * Initializes the value and the suit of the card.
+             * @param value The value of the card (A, 2-10, J, Q or K).
+             * @param suit The suit of the card (Clubs, Diamonds, Hearts or Spades).
+             * @note If no arguments are given, the default value is Ace of Clubs.
+            */
+            Card(Value value = Ace, Suit suit = Clubs);
 
-            // Get the suit of the card
-            char getSuit() const { return suit; }
+            /* 
+             * Copy constructor.
+             * Copy the value and the suit of the other card.
+             * @param other The other card to copy.
+            */
+            Card(const Card &other);
 
-            // Compare two cards
-            bool operator==(const Card &rhs) const { return value == rhs.value; }
+            /*
+             * Destructor.
+             * @note No need to implement (default is fine), just to make clang-tidy happy.
+            */
+            ~Card() = default;
 
-            // Compare two cards (for sorting)
-            bool operator<(const Card &rhs) const { return (value == 1 and rhs.value == 2) or (value > 2 and rhs.value < 3) or (value < rhs.value); }
+            /* Getters zone */
+
+            /* 
+             * Get the value of the card.
+             * @return The value of the card (A, 2-10, J, Q or K).
+            */
+            Value getValue() const {
+                return value;
+            }
+
+            /* 
+             * Get the suit of the card.
+             * @return The suit of the card (Clubs, Diamonds, Hearts or Spades).
+            */
+            Suit getSuit() const {
+                return suit;
+            }
+
+
+            /* Operators overriding zone */
+
+            /*
+             * Compare two cards (for equality).
+             * @param rhs The other card to compare.
+             * @return True if the cards are equal, false otherwise.
+            */
+            bool operator==(const Card &rhs) const {
+                return value == rhs.value;
+            }
+
+            /* 
+             * Compare two cards (for sorting).
+             * @param rhs The other card to compare.
+             * @return True if this card is smaller than the other, false otherwise.
+            */
+            bool operator<(const Card &rhs) const {
+                return (value == Ace and rhs.value == Two) or (value > Two and rhs.value < Three) or (value < rhs.value);
+            }
+
+            /*
+             * Copy assignment operator.
+             * @param other The other card to copy.
+             * @return A reference to this card.
+             * @note No need to implement (default is fine), just to make clang-tidy happy.
+            */
+            Card& operator=(const Card& other) {
+                return *this;
+            }
+
+            /* Other methods zone */
+
+            /*
+             * A string representation of the card.
+             * @return A string representation of the card.
+             * @note The string representation is in the format: "VALUE of SUIT".
+            */
+            string toString() const;
     };
 }
