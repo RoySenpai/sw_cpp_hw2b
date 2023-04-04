@@ -23,7 +23,7 @@
 /* Enumerations */
 
 /*  The value of the card (A, 2-10, J, Q or K). */
-enum class Value
+enum Value
 {
     Ace = 1,
     Two,
@@ -41,16 +41,13 @@ enum class Value
 };
 
 /* The suit of the card (Clubs, Diamonds, Hearts or Spades). */
-enum class Suit
+enum Suit
 {
     Clubs = 1,
     Diamonds,
     Hearts,
     Spades
 };
-
-using enum Value;
-using enum Suit;
 
 using namespace std;
 

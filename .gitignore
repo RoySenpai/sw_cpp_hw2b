@@ -30,10 +30,11 @@
 *.exe
 *.out
 *.app
-
 demo
 test
+test1
 
+# VSCode settings
 .vscode/settings.json
 .vscode/launch.json
 .vscode/c_cpp_properties.json
