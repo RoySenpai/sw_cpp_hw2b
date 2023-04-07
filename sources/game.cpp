@@ -201,8 +201,10 @@ namespace ariel
             }
 
             this->log += this->lastTurnStats;
-            cout << "Stats:" << endl;
-            cout << "p1.cardesTaken() = " << p1.cardesTaken() << "; p1.stacksize() = " << p1.stacksize() << "; p2.cardesTaken() = " << p2.cardesTaken() << "; p2.stacksize() = " << p2.stacksize() << "; sum = " << (p1.cardesTaken() + p2.cardesTaken() + p1.stacksize() + p2.stacksize()) << endl;
+
+            // For debugging purposes only
+            //cout << "Stats:" << endl;
+            //cout << "p1.cardesTaken() = " << p1.cardesTaken() << "; p1.stacksize() = " << p1.stacksize() << "; p2.cardesTaken() = " << p2.cardesTaken() << "; p2.stacksize() = " << p2.stacksize() << "; sum = " << (p1.cardesTaken() + p2.cardesTaken() + p1.stacksize() + p2.stacksize()) << endl;
         }
 
         else
