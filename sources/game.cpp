@@ -20,13 +20,12 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <cstdlib>
 #include "game.hpp"
-
-using namespace std;
 
 namespace ariel
 {
-    Game::Game(Player &plr1, Player &plr2) : p1(plr1), p2(plr2), winner(nullptr), lastTurnStats(""), log(""), turn(0), draws(0) {
+    Game::Game(Player &plr1, Player &plr2) : p1(plr1), p2(plr2), winner(nullptr), lastTurnStats(""), log(""), turn(0), draws(0), p1Wins(0), p2Wins(0) {
         // Error checks
         //if (plr1 == plr2)
             //throw invalid_argument("Player 1 and Player 2 are the same player!");         // Actually this should throw an error but the tests don't allow it so I commented it out.
@@ -52,18 +51,16 @@ namespace ariel
 
         
         // Shuffle the cards
-        auto rng = default_random_engine {};
+        unsigned seed = (unsigned) time(NULL);
+        auto rng = default_random_engine(seed);
         shuffle(cards.begin(), cards.end(), rng);
 
         // Deal the cards
-        int i = 0;
-        while(!cards.empty() && i < 52)
+        while(!cards.empty())
         {
-            int choise = i % 2;
+            int choise = ((int)cards.size()) % 2;
 
-            i++;
-
-            if (!choise)
+            if (choise == 0)
                 p1.addCard(cards.back());
 
             else
@@ -84,6 +81,9 @@ namespace ariel
             if (++this->turn > 26)
                 throw logic_error("Game cannot continue with more than 26 turns!");
 
+            unsigned int drawsinthisturn = 0;
+            this->lastTurnStats = "";
+
             Card p1Card = p1.getCard();
             Card p2Card = p2.getCard();
             p1.removeCard();
@@ -96,54 +96,97 @@ namespace ariel
             while (p1Card == p2Card)
             {
                 this->draws++;
+                drawsinthisturn++;
                 cout << "draw." << endl;
-                this->lastTurnStats += "Draw!";
+                this->lastTurnStats += "Draw!\n";
 
-                if (p1.stacksize() == 0 || p2.stacksize() == 0)
-                    break;
+                // Check if one of the players has no cards left in their stack or not enough cards to play.
+                // If so, shuffle the cards and deal them again
+                // If not, continue the game
+                // This is done to prevent the game from ending in a draw (which is not allowed).
+                if (p1.stacksize() <= 1 || p2.stacksize() <= 1)
+                {
+                    unsigned seed2 = (unsigned) time(NULL);
+                    auto rng2 = default_random_engine(seed2);
+                    shuffle(p1Cards.begin(), p1Cards.end(), rng2);
+
+                    seed2 = (unsigned) time(NULL);
+                    rng2 = default_random_engine(seed2);
+                    shuffle(p2Cards.begin(), p2Cards.end(), rng2);
+
+                    while(!p1Cards.empty())
+                    {
+                        p1.addCard(p1Cards.back());
+                        p1Cards.pop_back();
+                    }
+
+                    while(!p2Cards.empty())
+                    {
+                        p2.addCard(p2Cards.back());
+                        p2Cards.pop_back();
+                    }
+                }
                     
                 // Original cards
-                cards.push_back(p1Card);
-                cards.push_back(p2Card);
-
+                // Somewhat buggy, I don't know why, but it works without it.
+                // If you know why, please tell me, tnx!
+                //p1Cards.push_back(p1Card);
+                //p2Cards.push_back(p2Card);
+                
                 // Faceback cards
-                cards.push_back(p1.getCard());
-                cards.push_back(p2.getCard());
+                p1Cards.push_back(p1.getCard());
+                p2Cards.push_back(p2.getCard());
                 p1.removeCard();
                 p2.removeCard();
 
                 // New cards
                 p1Card = p1.getCard();
                 p2Card = p2.getCard();
+
+                cout << p1.getName() << " played " << p1Card.toString() << " " << p2.getName() << " played " << p2Card.toString() << ". ";
+                this->lastTurnStats += p1.getName() + " played " + p1Card.toString() + " " + p2.getName() + " played " + p2Card.toString() + ". ";
             }
 
             if (p1Card < p2Card)
             {
                 cout << p2.getName() << " wins." << endl;
-                this->lastTurnStats += (p1.getName() + "won the round!" + "\n" + "Draws in this turn: " + to_string(this->draws));
+                this->lastTurnStats += (p1.getName() + " won the round!" + "\n" + "Draws in this turn: " + to_string(drawsinthisturn)) + "\n\n";
+                this->p2Wins++;
 
-                p2.addTaken(p1Card);
-                p2.addTaken(p2Card);
+                p2.addCardTaken();
+                p2.addCardTaken();
 
-                while(!cards.empty())
+                while(!p1Cards.empty())
                 {
-                    p2.addTaken(cards.back());
-                    cards.pop_back();
+                    p2.addCardTaken();
+                    p1Cards.pop_back();
+                }
+
+                while(!p2Cards.empty())
+                {
+                    p2.addCardTaken();
+                    p2Cards.pop_back();
                 }
             }
 
             else
             {
                 cout << p1.getName() << " wins." << endl;
-                this->lastTurnStats += (p2.getName() + "won the round!" + "\n" + "Draws in this turn: " + to_string(this->draws));
+                this->lastTurnStats += (p2.getName() + " won the round!" + "\n" + "Draws in this turn: " + to_string(drawsinthisturn)) + "\n\n";
+                this->p1Wins++;
+                p1.addCardTaken();
+                p1.addCardTaken();
 
-                p1.addTaken(p1Card);
-                p1.addTaken(p2Card);
-
-                while(!cards.empty())
+                while(!p1Cards.empty())
                 {
-                    p1.addTaken(cards.back());
-                    cards.pop_back();
+                    p1.addCardTaken();
+                    p1Cards.pop_back();
+                }
+
+                while(!p2Cards.empty())
+                {
+                    p1.addCardTaken();
+                    p2Cards.pop_back();
                 }
             }
 
@@ -156,6 +199,10 @@ namespace ariel
                 // Check winner
                 this->winner = ((p1.cardesTaken() > p2.cardesTaken()) ? &p1 : &p2);
             }
+
+            this->log += this->lastTurnStats;
+            cout << "Stats:" << endl;
+            cout << "p1.cardesTaken() = " << p1.cardesTaken() << "; p1.stacksize() = " << p1.stacksize() << "; p2.cardesTaken() = " << p2.cardesTaken() << "; p2.stacksize() = " << p2.stacksize() << "; sum = " << (p1.cardesTaken() + p2.cardesTaken() + p1.stacksize() + p2.stacksize()) << endl;
         }
 
         else
@@ -185,13 +232,23 @@ namespace ariel
         cout << "Player " << p1.getName() << " status:" << endl;
         cout << "Cards won: " << p1.cardesTaken() << endl;
         cout << "Cards left: " << p1.stacksize() << endl;
-        cout << "Win rate: " << ((p1.cardesTaken() / 26) * 100) << "%" << endl
+        cout << "Win rate: " << (((float)this->p1Wins / this->turn) * 100) << "%" << endl
             << endl;
 
         cout << "Player " << p2.getName() << " status:" << endl;
         cout << "Cards won: " << p2.cardesTaken() << endl;
         cout << "Cards left: " << p2.stacksize() << endl;
-        cout << "Win rate: " << ((p2.cardesTaken() / 26) * 100) << "%" << endl
+        cout << "Win rate: " << (((float)this->p2Wins / this->turn) * 100) << "%" << endl
             << endl;
+
+        cout << "Total turns: " << this->turn << endl;
+        cout << "Total draws: " << this->draws << endl;
+        cout << "Draw rate: " << (((float)this->draws / this->turn) * 100) << "%" << endl;
+
+        if (this->winner != nullptr)
+            cout << "Winning player: " << this->winner->getName() << endl;
+
+        else
+            cout << "Winning player: Game is not finished!" << endl;
     }
 }

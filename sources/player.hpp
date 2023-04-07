@@ -36,7 +36,7 @@ namespace ariel
             vector<Card> hand;
 
             /* The player's taken cards. */
-            vector<Card> taken;
+            size_t takenCards;
 
             /*
              * The player's inGame status.
@@ -78,7 +78,15 @@ namespace ariel
              * @note The function is inline.
             */
             size_t cardesTaken() const { 
-                return this->taken.size(); 
+                return this->takenCards; 
+            }
+
+            /*
+             * Increments the number of cards taken by the player by 1.
+             * @note The function is inline.
+            */
+            void addCardTaken() { 
+                this->takenCards++; 
             }
 
             /*
@@ -89,16 +97,6 @@ namespace ariel
             */
             const Card& getCard() const { 
                 return this->hand.back();
-            }
-
-            /*
-             * Returns the last card in the player's taken cards.
-             * @return Last card in the player's taken cards.
-             * @note The function is const and can be called on a const object.
-             * @note The function is inline.
-            */
-            const Card& getTaken() const { 
-                return this->taken.back();
             }
 
 
@@ -138,18 +136,9 @@ namespace ariel
              * Adds a card to the player's hand.
              * @param card The card to add to the player's hand.
              * @throw invalid_argument If the card is already in the player's hand.
-             * @throw logic_error If the player is already in a game or 
-             *                      if the player has 26 cards.
+             * @throw logic_error if the player has 26 cards.
             */
             void addCard(Card& card);
-
-            /*
-             * Adds a card to the player's taken cards.
-             * @param card The card to add to the player's taken cards.
-             * @throw invalid_argument If the card is already in the player's taken cards.
-             * @throw logic_error If the player is already in a game.
-            */
-            void addTaken(Card& card);
 
             /*
              * Removes the last card in the player's hand cards.
@@ -157,14 +146,6 @@ namespace ariel
             */
             void removeCard() { 
                 this->hand.pop_back();
-            }
-
-            /*
-             * Removes the last card in the player's taken cards.
-             * @note The function is inline.
-            */
-            void removeTaken() { 
-                this->taken.pop_back();
             }
 
 
@@ -190,14 +171,6 @@ namespace ariel
              * @note The function is const and can be called on a const object.
             */
             bool hasCard(Card card) const;
-
-            /*
-             * Searches for the given card in the player's taken cards.
-             * @param card The card to search for.
-             * @return True if the player has the given card in his taken cards, false otherwise.
-             * @note The function is const and can be called on a const object.
-            */
-            bool hasTaken(Card card) const;
 
             /*
              * Returns a string representation of the player.

@@ -38,6 +38,12 @@ namespace ariel
             /* The cards in the game. */
             vector<Card> cards;
 
+            /* Temploary stack of cards of player 1 */
+            vector<Card> p1Cards;
+
+            /* Temploary stack of cards of player 2 */
+            vector<Card> p2Cards;
+
             /* The last turn stats. */
             string lastTurnStats;
 
@@ -55,11 +61,17 @@ namespace ariel
             /* The number of draws in the game. */
             unsigned int draws;
 
+            /* The number of wins for player 1 */
+            unsigned int p1Wins;
+
+            /* The number of wins for player 2 */
+            unsigned int p2Wins;
+
         public:
             /* Constuctors&Destructors zone */
             
             /* 
-             * A constructor for the Game class.
+             * @brief A constructor for the Game class.
              * @param plr1 - The first player.
              * @param plr2 - The second player.
              * @throws invalid_argument if Player 1 and Player 2 are the same player
@@ -71,13 +83,13 @@ namespace ariel
             /* Other methods zone */
 
             /*
-             * Plays a single turn.
+             * @brief Plays a single turn.
              * @throws logic_error if the game is over.
             */
             void playTurn();
 
             /* 
-             * Prints the last turn stats.
+             * @brief Prints the last turn stats.
              * @throws logic_error if the game is over.
              * @note The stats are printed to the standard output.
              * @note The stats are printed in the following format:
@@ -92,19 +104,19 @@ namespace ariel
             }
 
             /*
-             * Plays the game until the end.
+             * @brief Plays the game until the end.
              * @throws logic_error if the game is over.
             */
             void playAll();
 
             /*
-             * Prints the name of the winning player.
+             * @brief Prints the name of the winning player.
              * @note The name is printed to the standard output.
             */
             void printWiner() const;
 
             /*
-             * Prints the log of all the turns played.
+             * @brief Prints the log of all the turns played.
              * @note The log is printed to the standard output.
              * @note The log is printed in the same format as game.printLastTurn().
             */
@@ -113,7 +125,7 @@ namespace ariel
             }
 
             /*
-             * Prints the statistics of the game.
+             * @brief Prints the statistics of the game.
              * @note The statistics are printed to the standard output.
              * @note The statistics are printed in the following format:
              * @note Player <player 1 name> status:

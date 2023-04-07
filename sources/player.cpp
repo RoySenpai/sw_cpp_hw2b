@@ -18,7 +18,7 @@
 #include "player.hpp"
 
 namespace ariel {
-    Player::Player(string name): name(name), inGame(false) {};
+    Player::Player(string name): name(name), takenCards(0), inGame(false) {};
 
     bool Player::hasCard(Card card) const {
         for (size_t i = 0; i < this->stacksize(); ++i)
@@ -32,35 +32,10 @@ namespace ariel {
         return false;
     }
 
-    bool Player::hasTaken(Card card) const {
-        for (size_t i = 0; i < this->cardesTaken(); ++i)
-        {
-            Card t = this->taken.at(i);
-
-            if (t.getSuit() == card.getSuit() && t.getValue() == card.getValue())
-                return true;
-        }
-
-        return false;
-    }
-
     void Player::addCard(Card& card) { 
-        if (this->inGame)
-            throw logic_error("Player is already in a game!");
-
         if (this->hasCard(card))
-            throw invalid_argument("Player already has this card!");
+            throw invalid_argument("Player already has this card (hand)!");
 
         this->hand.push_back(card); 
-    }
-
-    void Player::addTaken(Card& card) {
-        if (!this->inGame)
-            throw logic_error("Player isn't in a game!");
-
-        if (this->hasTaken(card))
-            throw invalid_argument("Player already has this card!");
-
-        this->taken.push_back(card);
     }
 }
