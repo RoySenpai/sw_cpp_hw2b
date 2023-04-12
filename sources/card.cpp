@@ -66,4 +66,14 @@ namespace ariel {
 
         return (svalue + " of " + ssuit);
     }
+
+    bool Card::operator<(const Card &rhs) const {
+        if (this->value == Ace and rhs.value == Two)
+            return true;
+
+        else if (this->value > Two and rhs.value == Ace)
+            return true;
+
+        return (this->value < rhs.value);
+    }
 }

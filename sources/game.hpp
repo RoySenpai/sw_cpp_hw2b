@@ -35,15 +35,6 @@ namespace ariel
             /* The winner of the game. */
             Player *winner;    
 
-            /* The cards in the game. */
-            vector<Card> cards;
-
-            /* Temploary stack of cards of player 1 */
-            vector<Card> p1Cards;
-
-            /* Temploary stack of cards of player 2 */
-            vector<Card> p2Cards;
-
             /* The last turn stats. */
             string lastTurnStats;
 

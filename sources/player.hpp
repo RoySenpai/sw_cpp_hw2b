@@ -36,7 +36,7 @@ namespace ariel
             vector<Card> hand;
 
             /* The player's taken cards. */
-            size_t takenCards;
+            int takenCards;
 
             /*
              * The player's inGame status.
@@ -67,8 +67,8 @@ namespace ariel
              * @note The function is const and can be called on a const object.
              * @note The function is inline.
             */
-            size_t stacksize() const { 
-                return this->hand.size(); 
+            int stacksize() const { 
+                return (int)this->hand.size(); 
             }
 
             /*
@@ -77,7 +77,7 @@ namespace ariel
              * @note The function is const and can be called on a const object.
              * @note The function is inline.
             */
-            size_t cardesTaken() const { 
+            int cardesTaken() const { 
                 return this->takenCards; 
             }
 
@@ -147,20 +147,7 @@ namespace ariel
             void removeCard() { 
                 this->hand.pop_back();
             }
-
-
-            /* Operators overriding zone */
-
-            /* 
-             * Compare two players by their names.
-             * @param rhs The player to compare to.
-             * @return True if the players have the same name, false otherwise.
-             * @note The function is const and can be called on a const object.
-             * @note The function is inline.
-             */
-            bool operator==(const Player &rhs) const {
-                return this->name == rhs.name;
-            }
+            
 
             /* Other methods zone */
 

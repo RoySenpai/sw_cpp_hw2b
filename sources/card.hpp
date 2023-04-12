@@ -109,9 +109,7 @@ namespace ariel
              * @param rhs The other card to compare.
              * @return True if this card is smaller than the other, false otherwise.
             */
-            bool operator<(const Card &rhs) const {
-                return (value == Ace and rhs.value == Two) or (value > Two and rhs.value < Three) or (value < rhs.value);
-            }
+            bool operator<(const Card &rhs) const;
 
             /* Other methods zone */
 

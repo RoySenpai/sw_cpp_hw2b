@@ -26,15 +26,13 @@
 namespace ariel
 {
     Game::Game(Player &plr1, Player &plr2) : p1(plr1), p2(plr2), winner(nullptr), lastTurnStats(""), log(""), turn(0), draws(0), p1Wins(0), p2Wins(0) {
-        // Error checks
-        //if (plr1 == plr2)
-            //throw invalid_argument("Player 1 and Player 2 are the same player!");         // Actually this should throw an error but the tests don't allow it so I commented it out.
-
         if (plr1.isInGame())
             throw invalid_argument("Player 1 is already in a game!");
 
         if (plr2.isInGame())
             throw invalid_argument("Player 2 is already in a game!");
+
+        vector<Card> cards;
 
         // Create the cards
         for (int i = 1; i < 14; ++i)
@@ -76,12 +74,15 @@ namespace ariel
 
     void Game::playTurn()
     {
+        if (&p1 == &p2)
+            throw invalid_argument("Cannot play a game with the same player twice!");
+            
         if (p1.isInGame() && p2.isInGame())
         {
             if (++this->turn > 26)
                 throw logic_error("Game cannot continue with more than 26 turns!");
 
-            unsigned int drawsinthisturn = 0;
+            int drawsinthisturn = 0, OnTable = 2;
             this->lastTurnStats = "";
 
             Card p1Card = p1.getCard();
@@ -89,106 +90,71 @@ namespace ariel
             p1.removeCard();
             p2.removeCard();
 
-            cout << p1.getName() << " played " << p1Card.toString() << " " << p2.getName() << " played " << p2Card.toString() << ". ";
             this->lastTurnStats = "Turn " + to_string(this->turn) + ":\n" + p1.getName() + " played " + p1Card.toString() + " " + p2.getName() + " played " + p2Card.toString() + ". ";
-
 
             while (p1Card == p2Card)
             {
                 this->draws++;
                 drawsinthisturn++;
-                cout << "draw." << endl;
                 this->lastTurnStats += "Draw!\n";
 
                 // Check if one of the players has no cards left in their stack or not enough cards to play.
-                // If so, shuffle the cards and deal them again
+                // If so, each player takes half of the cards on the table.
                 // If not, continue the game
-                // This is done to prevent the game from ending in a draw (which is not allowed).
+                // This is done to prevent the game from ending in a never-ending loop.
                 if (p1.stacksize() <= 1 || p2.stacksize() <= 1)
                 {
-                    unsigned seed2 = (unsigned) time(NULL);
-                    auto rng2 = default_random_engine(seed2);
-                    shuffle(p1Cards.begin(), p1Cards.end(), rng2);
-
-                    seed2 = (unsigned) time(NULL);
-                    rng2 = default_random_engine(seed2);
-                    shuffle(p2Cards.begin(), p2Cards.end(), rng2);
-
-                    while(!p1Cards.empty())
+                    while (OnTable > 0)
                     {
-                        p1.addCard(p1Cards.back());
-                        p1Cards.pop_back();
+                        p1.addCardTaken();
+                        p2.addCardTaken();
+                        OnTable -= 2;
                     }
 
-                    while(!p2Cards.empty())
-                    {
-                        p2.addCard(p2Cards.back());
-                        p2Cards.pop_back();
-                    }
+                    break;
                 }
-                    
-                // Original cards
-                // Somewhat buggy, I don't know why, but it works without it.
-                // If you know why, please tell me, tnx!
-                //p1Cards.push_back(p1Card);
-                //p2Cards.push_back(p2Card);
                 
                 // Faceback cards
-                p1Cards.push_back(p1.getCard());
-                p2Cards.push_back(p2.getCard());
                 p1.removeCard();
                 p2.removeCard();
 
                 // New cards
                 p1Card = p1.getCard();
                 p2Card = p2.getCard();
+                p1.removeCard();
+                p2.removeCard();
 
-                cout << p1.getName() << " played " << p1Card.toString() << " " << p2.getName() << " played " << p2Card.toString() << ". ";
+                OnTable += 4;
+
                 this->lastTurnStats += p1.getName() + " played " + p1Card.toString() + " " + p2.getName() + " played " + p2Card.toString() + ". ";
             }
 
             if (p1Card < p2Card)
             {
-                cout << p2.getName() << " wins." << endl;
                 this->lastTurnStats += (p1.getName() + " won the round!" + "\n" + "Draws in this turn: " + to_string(drawsinthisturn)) + "\n\n";
                 this->p2Wins++;
 
-                p2.addCardTaken();
-                p2.addCardTaken();
-
-                while(!p1Cards.empty())
+                while (OnTable > 0)
                 {
                     p2.addCardTaken();
-                    p1Cards.pop_back();
+                    --OnTable;
                 }
+            }
 
-                while(!p2Cards.empty())
+            else if (p2Card < p1Card)
+            {
+                this->lastTurnStats += (p2.getName() + " won the round!" + "\n" + "Draws in this turn: " + to_string(drawsinthisturn)) + "\n\n";
+                this->p1Wins++;
+
+                while (OnTable > 0)
                 {
-                    p2.addCardTaken();
-                    p2Cards.pop_back();
+                    p1.addCardTaken();
+                    --OnTable;
                 }
             }
 
             else
-            {
-                cout << p1.getName() << " wins." << endl;
-                this->lastTurnStats += (p2.getName() + " won the round!" + "\n" + "Draws in this turn: " + to_string(drawsinthisturn)) + "\n\n";
-                this->p1Wins++;
-                p1.addCardTaken();
-                p1.addCardTaken();
-
-                while(!p1Cards.empty())
-                {
-                    p1.addCardTaken();
-                    p1Cards.pop_back();
-                }
-
-                while(!p2Cards.empty())
-                {
-                    p1.addCardTaken();
-                    p2Cards.pop_back();
-                }
-            }
+                this->lastTurnStats += "Draw!\n";
 
             // Checking if the game is over
             if (!p1.stacksize() || !p2.stacksize())
@@ -201,10 +167,6 @@ namespace ariel
             }
 
             this->log += this->lastTurnStats;
-
-            // For debugging purposes only
-            //cout << "Stats:" << endl;
-            //cout << "p1.cardesTaken() = " << p1.cardesTaken() << "; p1.stacksize() = " << p1.stacksize() << "; p2.cardesTaken() = " << p2.cardesTaken() << "; p2.stacksize() = " << p2.stacksize() << "; sum = " << (p1.cardesTaken() + p2.cardesTaken() + p1.stacksize() + p2.stacksize()) << endl;
         }
 
         else
@@ -234,18 +196,18 @@ namespace ariel
         cout << "Player " << p1.getName() << " status:" << endl;
         cout << "Cards won: " << p1.cardesTaken() << endl;
         cout << "Cards left: " << p1.stacksize() << endl;
-        cout << "Win rate: " << (((float)this->p1Wins / this->turn) * 100) << "%" << endl
+        cout << "Win rate: " << ((float)this->p1Wins / this->turn) << "%" << endl
             << endl;
 
         cout << "Player " << p2.getName() << " status:" << endl;
         cout << "Cards won: " << p2.cardesTaken() << endl;
         cout << "Cards left: " << p2.stacksize() << endl;
-        cout << "Win rate: " << (((float)this->p2Wins / this->turn) * 100) << "%" << endl
+        cout << "Win rate: " << ((float)this->p2Wins / this->turn) << "%" << endl
             << endl;
 
         cout << "Total turns: " << this->turn << endl;
         cout << "Total draws: " << this->draws << endl;
-        cout << "Draw rate: " << (((float)this->draws / this->turn) * 100) << "%" << endl;
+        cout << "Draw rate: " << ((float)this->draws / this->turn) << "%" << endl;
 
         if (this->winner != nullptr)
             cout << "Winning player: " << this->winner->getName() << endl;

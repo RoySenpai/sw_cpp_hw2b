@@ -34,7 +34,7 @@ namespace ariel {
 
     void Player::addCard(Card& card) { 
         if (this->hasCard(card))
-            throw invalid_argument("Player already has this card (hand)!");
+            throw invalid_argument("Player already has this card!");
 
         this->hand.push_back(card); 
     }
